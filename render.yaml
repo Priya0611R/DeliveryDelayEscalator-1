@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: delivery-delay-escalator
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: BROWSERBASE_API_KEY
+        sync: false
