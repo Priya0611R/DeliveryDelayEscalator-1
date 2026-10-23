@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delivery Delay Escalator — Logistics Intelligence Platform</title>
+  <meta name="description" content="Enterprise delivery delay detection, dispute investigation, and support ticket escalation dashboard.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+          <div class="brand-info">
+            <span class="brand-title">Escalator AI</span>
+            <span class="brand-subtitle">Logistics Ops</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-page="dashboard" id="nav-dashboard">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-page="analyze" id="nav-analyze">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <span>Order Analysis</span>
+        </button>
+        <button class="nav-item" data-page="approvals" id="nav-approvals">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Pending Approvals</span>
+          <span class="badge badge-warning sidebar-counter" id="sidebar-approvals-count">0</span>
+        </button>
+        <button class="nav-item" data-page="tickets" id="nav-tickets">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+          <span>Ticket Records</span>
+        </button>
+        <button class="nav-item" data-page="audit" id="nav-audit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Source & Audit</span>
+        </button>
+        <button class="nav-item" data-page="history" id="nav-history">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+          <span>Analysis History</span>
+        </button>
+        <button class="nav-item" data-page="diagnostics" id="nav-diagnostics">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <span>Tests & Verification</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="env-tag">
+          <span class="pulse-dot"></span>
+          <span>Simulation Engine Active</span>
+        </div>
+        <p class="env-disclaimer">Local synthetic evidence mode. Not connected to live external carrier.</p>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Top Navigation Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div class="page-title-group">
+            <h1 class="page-title" id="pageTitle">Operations Dashboard</h1>
+            <span class="page-breadcrumb" id="pageBreadcrumb">Overview & Metrics</span>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="system-status-indicator" id="systemStatusBadge">
+            <span class="status-dot online"></span>
+            <span class="status-text">Backend Connected</span>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btnQuickRefresh">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            <span>Refresh</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable Viewport -->
+      <main class="page-viewport">
+
+        <!-- ============================================== -->
+        <!-- VIEW 1: DASHBOARD OVERVIEW                     -->
+        <!-- ============================================== -->
+        <section class="page-section active" id="view-dashboard">
+          <div class="metrics-grid">
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-blue">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Total Analyzed</span>
+                <span class="metric-value" id="stat-total-analyzed">0</span>
+                <span class="metric-sub" id="stat-total-runs">0 runs processed</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-red">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Confirmed Delays</span>
+                <span class="metric-value" id="stat-confirmed-delays">0</span>
+                <span class="metric-sub">Promise date exceeded</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-amber">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Discrepancies</span>
+                <span class="metric-value" id="stat-discrepancies">0</span>
+                <span class="metric-sub">Marked delivered / disputed</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Pending Approval</span>
+                <span class="metric-value" id="stat-pending-approvals">0</span>
+                <span class="metric-sub">Awaiting human review</span>
+              </div>
+            </div>
+
+            <div class="metric-card">
+              <div class="metric-icon metric-icon-green">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+              </div>
+              <div class="metric-content">
+                <span class="metric-label">Tickets Created</span>
+                <span class="metric-value" id="stat-tickets-created">0</span>
+                <span class="metric-sub">Verified demo tickets</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions & Pipeline Banner -->
+          <div class="card banner-card">
+            <div class="banner-content">
+              <h3>Agentic Delivery Escalation Workflow</h3>
+              <p>Autonomous evidence retrieval &rarr; Date & tracking normalization &rarr; Deterministic delay & discrepancy detection &rarr; Human-in-the-loop approval &rarr; Verified ticket issuance.</p>
+            </div>
+            <div class="banner-actions">
+              <button class="btn btn-primary" id="btnStartAnalysisShortcut">Analyze New Order</button>
+              <button class="btn btn-secondary" id="btnRunTestsShortcut">Run Test Suite</button>
+            </div>
+          </div>
+
+          <!-- Recent Activity & Tickets Split Grid -->
+          <div class="dashboard-split-grid">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Recent Analysis Activity</h3>
+                  <p class="card-subtitle">Real-time runs recorded in SQLite</p>
+                </div>
+                <button class="btn btn-link btn-sm" data-goto="history">View All &rarr;</button>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="dashboard-recent-table">
+                  <thead>
+                    <tr>
+                      <th>Run ID</th>
+                      <th>Order ID</th>
+                      <th>Scenario</th>
+                      <th>Status</th>
+                      <th>Timestamp</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-recent-tbody">
+                    <tr><td colspan="6" class="table-empty">Loading recent analysis records...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Recent Verified Tickets</h3>
+                  <p class="card-subtitle">Created following human approval</p>
+                </div>
+                <button class="btn btn-link btn-sm" data-goto="tickets">View All &rarr;</button>
+              </div>
+              <div class="table-responsive">
+                <table class="data-table" id="dashboard-tickets-table">
+                  <thead>
+                    <tr>
+                      <th>Ticket ID</th>
+                      <th>Order ID</th>
+                      <th>Scenario</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                    </tr>
+                  </thead>
+                  <tbody id="dashboard-tickets-tbody">
+                    <tr><td colspan="5" class="table-empty">Loading recent ticket records...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 2: ORDER ANALYSIS FORM & STAGE PROGRESS   -->
+        <!-- ============================================== -->
+        <section class="page-section" id="view-analyze">
+          <div class="analyze-layout">
+            <!-- Left Panel: Input Configuration -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title">Inspect & Analyze Order</h3>
+                  <p class="card-subtitle">Acquire tracking evidence, normalize events, and evaluate escalation</p>
+                </div>
+                <span class="badge badge-info">Deterministic Rules</span>
+              </div>
+
+              <form id="analysisForm" class="form-layout">
+                <div class="form-group">
+                  <label for="inputScenarioPreset" class="form-label">Scenario Presets (Demonstration Fixtures)</label>
+                  <select id="inputScenarioPreset" class="form-select">
+                    <option value="DEMO-1001" selected>DEMO-1001 — TC1: Promised delivery date missed (Triggers Human Approval)</option>
+                    <option value="DEMO-1002">DEMO-1002 — TC2: Marked delivered but recipient disputes receipt (Triggers Human Approval)</option>
+                    <option value="DEMO-1003">DEMO-1003 — TC3: Repeated duplicate tracking events (On schedule — No ticket proposed)</option>
+                    <option value="DEMO-1004">DEMO-1004 — TC4: Customs delay (Triggers Human Approval & Ticket creation)</option>
+                    <option value="CUSTOM">Custom Order Entry...</option>
+                  </select>
+                  <span class="form-hint" id="presetDescription">Promised date passed (2026-10-18). Order delayed at regional hub.</span>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="inputOrderId" class="form-label">Order Identifier *</label>
+                    <input type="text" id="inputOrderId" class="form-input" value="DEMO-1001" required pattern="[A-Za-z0-9_-]{1,64}">
+                  </div>
+
+                  <div class="form-group">
+                    <label for="inputPromisedDate" class="form-label">Promised Delivery Date (YYYY-MM-DD) *</label>
+                    <input type="date" id="inputPromisedDate" class="form-input" value="2026-10-18" required>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="inputSourceMode" class="form-label">Evidence Source Mode</label>
+                    <select id="inputSourceMode" class="form-select">
+                      <option value="simulation" selected>Synthetic HTML Demo (Cheerio + SHA-256)</option>
+                      <option value="browserbase">Browserbase Cloud Browser (Stealth Agent)</option>
+                      <option value="organizer" disabled>External Organizer Store (Not configured)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group checkbox-group">
+                    <label class="checkbox-label" for="inputDisputeReceipt">
+                      <input type="checkbox" id="inputDisputeReceipt">
+                      <span>Customer reports non-receipt (Delivery Disputed)</span>
+                    </label>
+                    <span class="form-hint">Simulates customer escalation stating parcel was not received despite delivery mark.</span>
+                  </div>
+                </div>
+
+                <div class="form-actions">
+                  <button type="submit" class="btn btn-primary btn-lg" id="btnAnalyzeSubmit">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <span>Run Agentic Analysis</span>
+                  </button>
+                  <button type="button" class="btn btn-outline" id="btnResetForm">Reset</button>
+                </div>
+              </form>
+            </div>
+
+            <!-- Workflow Progress Stepper (Active during and after analysis) -->
+            <div class="card" id="workflowProgressCard">
+              <div class="card-header">
+                <h3 class="card-title">Workflow Execution Pipeline</h3>
+                <span class="badge" id="workflowOverallStatus">Ready</span>
+              </div>
+              <div class="stepper" id="workflowStepper">
+                <div class="step-item" id="step-1">
+                  <div class="step-circle">1</div>
+                  <div class="step-content">
+                    <div class="step-title">Input Validation</div>
+                    <div class="step-desc">Validate order ID & promised date format</div>
+                  </div>
+                </div>
+                <div class="step-item" id="step-2">
+                  <div class="step-circle">2</div>
+                  <div class="step-content">
+                    <div class="step-title">Evidence Acquisition</div>
+                    <div class="step-desc">Retrieve order & carrier tracking HTML via HTTP</div>
+                  </div>
+                </div>
+                <div class="step-item" id="step-3">
+                  <div class="step-circle">3</div>
+                  <div class="step-content">
+                    <div class="step-title">Cheerio Parse & SHA-256 Audit</div>
+                    <div class="step-desc">Normalize DOM and compute tamper-proof hashes</div>
+                  </div>
+                </div>
+                <div class="step-item" id="step-4">
+                  <div class="step-circle">4</div>
+                  <div class="step-content">
+                    <div class="step-title">Event Deduplication</div>
+                    <div class="step-desc">Deduplicate repeated tracking events (TC3)</div>
+                  </div>
+                </div>
+                <div class="step-item" id="step-5">
+                  <div class="step-circle">5</div>
+                  <div class="step-content">
+                    <div class="step-title">Deterministic Decision</div>
+                    <div class="step-desc">Evaluate delay against calendar reference date</div>
+                  </div>
+                </div>
+                <div class="step-item" id="step-6">
+                  <div class="step-circle">6</div>
+                  <div class="step-content">
+                    <div class="step-title">Proposal Generation</div>
+                    <div class="step-desc">Generate support escalation for human approval</div>
+                  </div>
+                </div>
+                <div class="step-item" id="step-7">
+                  <div class="step-circle">7</div>
+                  <div class="step-content">
+                    <div class="step-title" id="step-7-title">Human Approval Gateway</div>
+                    <div class="step-desc" id="step-7-desc">Awaiting human sign-off before demo ticket creation</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Analysis Results Display (Hidden until analyzed) -->
+            <div class="card hidden" id="analysisResultCard">
+              <div class="card-header">
+                <div>
+                  <h3 class="card-title" id="resultHeaderTitle">Analysis Decision Result</h3>
+                  <p class="card-subtitle" id="resultHeaderSubtitle">Completed analysis run</p>
+                </div>
+                <div class="badge-group" id="resultBadgesGroup"></div>
+              </div>
+
+              <div class="result-body">
+                <!-- Decision summary banner -->
+                <div class="decision-banner" id="resultDecisionBanner">
+                  <div class="decision-icon" id="resultDecisionIcon"></div>
+                  <div class="decision-text">
+                    <h4 id="resultDecisionTitle">Decision</h4>
+                    <p id="resultDecisionReason">Reason explanation</p>
+                    <p class="recommendation-text" id="resultRecommendation">Recommendation</p>
+                  </div>
+                </div>
+
+                <!-- Proposed Action & Human-in-the-Loop Gateway (PROMINENT RIGHT BELOW DECISION) -->
+                <div class="approval-gateway" id="resultApprovalGateway"></div>
+
+                <!-- Metrics breakdown -->
+                <div class="order-summary-grid">
+                  <div class="summary-item">
+                    <span class="label">Order ID:</span>
+                    <strong id="res-order-id">-</strong>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Promised Date:</span>
+                    <strong id="res-promised-date">-</strong>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Latest Tracking Status:</span>
+                    <strong id="res-latest-status">-</strong>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Duplicates Removed:</span>
+                    <strong id="res-duplicates-removed">0</strong>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Run Reference ID:</span>
+                    <code id="res-run-id">-</code>
+                  </div>
+                  <div class="summary-item">
+                    <span class="label">Retrieved At:</span>
+                    <span id="res-retrieved-at">-</span>
+                  </div>
+                </div>
+
+                <!-- Tracking Timeline -->
+                <div class="timeline-section">
+                  <h4 class="section-heading">Verified Tracking Timeline</h4>
+                  <div class="timeline" id="resultTimeline"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 3: PENDING APPROVALS                      -->
+        <!-- ============================================== -->
+        <section class="page-section" id="view-approvals">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Human-in-the-Loop Approval Queue</h3>
+                <p class="card-subtitle">Review proposed support ticket actions before creation. Independent human consent required.</p>
+              </div>
+              <div class="header-filters">
+                <select id="filterApprovalStatus" class="form-select form-select-sm">
+                  <option value="ALL">All Proposals</option>
+                  <option value="PENDING_APPROVAL" selected>Pending Approval Only</option>
+                  <option value="APPROVED">Approved Only</option>
+                  <option value="REJECTED">Rejected Only</option>
+                </select>
+                <button class="btn btn-outline btn-sm" id="btnRefreshApprovals">Refresh</button>
+              </div>
+            </div>
+
+            <div class="proposals-list" id="proposalsContainer">
+              <div class="table-empty">Loading proposals...</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 4: TICKET RECORDS                         -->
+        <!-- ============================================== -->
+        <section class="page-section" id="view-tickets">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Support Ticket Records</h3>
+                <p class="card-subtitle">Local demo tickets issued after human approval. Idempotent submission verified.</p>
+              </div>
+              <button class="btn btn-outline btn-sm" id="btnRefreshTickets">Refresh Tickets</button>
+            </div>
+
+            <div class="alert alert-info">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+              <span><strong>Compliance Notice:</strong> These records are verified local demo tickets. No refund, replacement, or financial compensation is promised unless explicitly confirmed by a real external service.</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table" id="ticketsTable">
+                <thead>
+                  <tr>
+                    <th>Ticket ID</th>
+                    <th>Order ID</th>
+                    <th>Scenario</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Verification</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="ticketsTbody">
+                  <tr><td colspan="7" class="table-empty">Loading ticket records...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 5: SOURCE EVIDENCE & AUDIT                -->
+        <!-- ============================================== -->
+        <section class="page-section" id="view-audit">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Evidence & Cryptographic Source Audit</h3>
+                <p class="card-subtitle">SHA-256 tamper-evident content hashes and retrieval timestamps for all simulated HTML sources.</p>
+              </div>
+              <button class="btn btn-outline btn-sm" id="btnRefreshAudit">Refresh Audit Trail</button>
+            </div>
+
+            <div class="alert alert-warning">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <span><strong>Simulated Evidence Disclaimer:</strong> The documents listed below are synthetic demonstration fixtures served by the local Express server. They are not live carrier or retailer records.</span>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table" id="auditTable">
+                <thead>
+                  <tr>
+                    <th>Source Document</th>
+                    <th>Source URL</th>
+                    <th>HTTP Status</th>
+                    <th>Retrieved At</th>
+                    <th>SHA-256 Content Hash</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="auditTbody">
+                  <tr><td colspan="6" class="table-empty">Loading evidence audit records...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 6: ANALYSIS HISTORY                       -->
+        <!-- ============================================== -->
+        <section class="page-section" id="view-history">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Analysis History Repository</h3>
+                <p class="card-subtitle">Search, filter, and inspect detailed analysis runs and JSON payloads</p>
+              </div>
+              <div class="search-filter-bar">
+                <input type="text" id="historySearchInput" class="form-input form-input-sm" placeholder="Search by Order ID or Run ID...">
+                <select id="historyScenarioFilter" class="form-select form-select-sm">
+                  <option value="">All Scenarios</option>
+                  <option value="DELIVERY_DELAY">Delivery Delay</option>
+                  <option value="DELIVERY_DISPUTED">Delivery Disputed</option>
+                  <option value="NO_ESCALATION">No Escalation / On Time</option>
+                </select>
+                <button class="btn btn-outline btn-sm" id="btnSearchHistory">Filter</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table" id="historyTable">
+                <thead>
+                  <tr>
+                    <th>Run ID</th>
+                    <th>Order ID</th>
+                    <th>Scenario</th>
+                    <th>Decision Status</th>
+                    <th>Created At</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTbody">
+                  <tr><td colspan="6" class="table-empty">Loading analysis history...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- VIEW 7: TESTS & SYSTEM STATUS                  -->
+        <!-- ============================================== -->
+        <section class="page-section" id="view-diagnostics">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h3 class="card-title">Automated Verification & Diagnostics Suite</h3>
+                <p class="card-subtitle">Executes TC1, TC2, TC3, TC4 and Decision Engine tests directly on the live server</p>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btnExecuteDiagnostics">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                <span>Run Real Test Suite</span>
+              </button>
+            </div>
+
+            <!-- Diagnostics Summary Banner -->
+            <div class="diagnostics-summary-bar" id="diagnosticsSummaryBar">
+              <div class="summary-badge-item">
+                <span class="label">Total Tests:</span>
+                <span class="val" id="diag-total">0</span>
+              </div>
+              <div class="summary-badge-item">
+                <span class="label">Passed:</span>
+                <span class="val text-success" id="diag-passed">0</span>
+              </div>
+              <div class="summary-badge-item">
+                <span class="label">Failed:</span>
+                <span class="val text-danger" id="diag-failed">0</span>
+              </div>
+              <div class="summary-badge-item">
+                <span class="label">Last Executed:</span>
+                <span class="val" id="diag-timestamp">Never</span>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table" id="diagnosticsTable">
+                <thead>
+                  <tr>
+                    <th>Test ID</th>
+                    <th>Test Case Description</th>
+                    <th>Expected Result</th>
+                    <th>Actual Result</th>
+                    <th>Execution Time</th>
+                    <th>Outcome</th>
+                  </tr>
+                </thead>
+                <tbody id="diagnosticsTbody">
+                  <tr><td colspan="6" class="table-empty">Click "Run Real Test Suite" to execute test runner.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODALS & DIALOGS                               -->
+  <!-- ============================================== -->
+
+  <!-- Run Detail Modal -->
+  <div class="modal-backdrop hidden" id="runDetailModal">
+    <div class="modal-card modal-lg">
+      <div class="modal-header">
+        <div>
+          <h3 class="modal-title" id="modalRunTitle">Analysis Run Details</h3>
+          <p class="modal-subtitle" id="modalRunSubtitle">Run ID</p>
+        </div>
+        <button class="modal-close" id="btnCloseRunModal">&times;</button>
+      </div>
+      <div class="modal-body" id="modalRunBody">
+        <div class="tabs-nav">
+          <button class="tab-btn active" data-tab="tab-overview">Overview</button>
+          <button class="tab-btn" data-tab="tab-evidence-json">Evidence JSON</button>
+          <button class="tab-btn" data-tab="tab-result-json">Result JSON</button>
+        </div>
+        <div class="tab-pane active" id="tab-overview">
+          <div id="modalOverviewContent"></div>
+        </div>
+        <div class="tab-pane" id="tab-evidence-json">
+          <pre class="code-viewer"><code id="modalEvidenceJson"></code></pre>
+        </div>
+        <div class="tab-pane" id="tab-result-json">
+          <pre class="code-viewer"><code id="modalResultJson"></code></pre>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCloseRunModalBottom">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Dialog Modal (For Approve / Reject) -->
+  <div class="modal-backdrop hidden" id="confirmActionModal">
+    <div class="modal-card modal-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" id="confirmModalTitle">Confirm Action</h3>
+        <button class="modal-close" id="btnCloseConfirmModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmModalMessage">Are you sure you want to proceed?</p>
+        <div class="form-group hidden" id="rejectReasonGroup">
+          <label for="inputRejectReason" class="form-label">Rejection Reason</label>
+          <input type="text" id="inputRejectReason" class="form-input" placeholder="e.g. Carrier provided valid delivery signature">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="btnCancelConfirm">Cancel</button>
+        <button class="btn btn-primary" id="btnExecuteConfirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

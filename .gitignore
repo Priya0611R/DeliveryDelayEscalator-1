@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment Variables & Secrets
+.env
+.env.local
+*.env
+
+# SQLite Database & Write-Ahead Logs
+*.db
+*.db-shm
+*.db-wal
+*.backup.db
+*.backup.js
+
+# OS & Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
